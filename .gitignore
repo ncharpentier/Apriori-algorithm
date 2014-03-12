@@ -7,3 +7,10 @@
 
 # bin file #
 */bin/*
+
+bin/
+.idea/
+
+Resources/unstructured/config.txt
+Resources/unstructured/transa.txt
+

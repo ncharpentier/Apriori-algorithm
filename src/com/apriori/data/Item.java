@@ -1,23 +1,41 @@
 package com.apriori.data;
 
+import java.util.HashMap;
+import java.util.Map;
+
+/* item class is a fly-weight class */
 public class Item {
-	private int id;
-	private String description;
+	public static Map<String, Item> ITEMS;
 	
-	public Item(int id, String des){
-		this.id = id;
-		this.description = des;
-	}
-	
-	public int getId(){
-		return this.id;
-	}
-	
-	public String getDescription(){
-		return this.description;
+	/* add the item to the static list */
+	public Item(String lib, String value){
+		if (ITEMS == null)
+			ITEMS = new HashMap<String, Item>();
+		
+		String constructor = construct(lib, value);
+		
+		if (!ITEMS.containsKey(constructor))
+			ITEMS.put(constructor, this);
 	}
 	
-	public boolean isEqual(Item c) {
-		return this.id == c.id;
+
+	/* Static method to uniform the string built from the lib & value */
+	private static String construct(String lib, String value) {
+		return lib + "=" + value;
 	}
+	
+	/* Static method to get the item from the static list thanks to the lib & value */
+	public static Item getItemByValue(String lib, String value) {
+		Item result = null;
+		
+		String constructor = construct(lib, value);
+		
+		if (ITEMS == null)
+			ITEMS = new HashMap<String, Item>();
+		
+		if (ITEMS.containsKey(constructor))
+			result = ITEMS.get(constructor);
+		
+		return result;
 	}
+}

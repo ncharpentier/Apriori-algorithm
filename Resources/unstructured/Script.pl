@@ -18,15 +18,15 @@
 	print CONFIG @out.length."\n";
 
 	
-	#$premier_mot = 1;
-	#foreach (@out) {
-	#	if(not $premier_mot) {        # gestion de la virgule
-	#    	print SORTIE_APRIORI ",";
-	#    }
-	#    $premier_mot = 0;
-	#	print SORTIE_APRIORI $_;	
-	#}
-	#print SORTIE_APRIORI "\n";
+	$premier_mot = 1;
+	foreach (@out) {
+		if(not $premier_mot) {        # gestion de la virgule
+	    	print SORTIE_APRIORI " ";
+	    }
+	    $premier_mot = 0;
+		print SORTIE_APRIORI $_;	
+	}
+	print SORTIE_APRIORI "\n";
 	
 	$nbArticles = 0;
 	while($ligne = <ARTICLE>) {

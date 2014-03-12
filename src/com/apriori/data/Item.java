@@ -1,6 +1,4 @@
-package apriori;
-
-import apriori.Item;
+package com.apriori.data;
 
 public class Item {
 	private int id;

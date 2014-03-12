@@ -11,7 +11,7 @@
  *      2. transa.txt - transaction file, each line is a transaction, items are separated by a space
  */
 
-package apriori;
+package com.apriori;
 import java.io.*;
 import java.util.*;
 

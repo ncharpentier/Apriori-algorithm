@@ -5,11 +5,15 @@ import java.util.List;
 
 public class ItemSet {
 	
+	/* --- Attributes --- */
 	private int k;
 	private int support;
 	private List<Item> items;
+	/* --- /Attributes --- */
 
 	
+	
+	/* --- Constructors --- */
 	public ItemSet(int k) {
 		super();
 		this.k = k;
@@ -22,24 +26,24 @@ public class ItemSet {
 		this.support = support;
 		this.items = items;
 	}
+	/* --- /Constructors --- */
 	
-	public int getK() {
-		return k;
-	}
 	
-	public int getSupport() {
-		return support;
-	}
+	
+	/* --- Getters & Setters --- */
+	public int getK() { return k; }
+	
+	public int getSupport() { return support; }
+	public void setSupport(int support) { this.support = support; }
 
-	public void setSupport(int support) {
-		this.support = support;
-	}
-
-	public List<Item> getItems() {
-		return items;
-	}
-
+	public List<Item> getItems() { return items; }
+	/* --- /Getter & Setters --- */
+	
+	
+	
+	
+	/* Add an item to the list */
 	public void addItem(Item item) {
 		items.add(item);
-	}
+	} /* End addItem */
 }

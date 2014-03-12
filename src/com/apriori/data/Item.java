@@ -3,39 +3,56 @@ package com.apriori.data;
 import java.util.HashMap;
 import java.util.Map;
 
-/* item class is a fly-weight class */
+/* Item class is a fly-weight class */
 public class Item {
-	public static Map<String, Item> ITEMS;
 	
-	/* add the item to the static list */
-	public Item(String lib, String value){
-		if (ITEMS == null)
-			ITEMS = new HashMap<String, Item>();
-		
-		String constructor = construct(lib, value);
-		
-		if (!ITEMS.containsKey(constructor))
-			ITEMS.put(constructor, this);
-	}
-	
+	/* --- Attributes --- */
+	/* Static */
+	private static Map<String, Item> ITEMS;
 
-	/* Static method to uniform the string built from the lib & value */
+	/* No-Static */
+	private String key;
+	/* --- /Attributes --- */
+	
+	
+	
+	/* --- Constructors --- */
+	/* Private constructor */
+	private Item(String key) { this.key = key; }
+	/* --- /Constructors --- */
+	
+	
+	
+	/* --- Getter --- */
+	public String getKey() { return key; }
+	/* --- /Getter --- */
+	
+	
+	
+	/* Static method to uniform the built string from the lib & value */
 	private static String construct(String lib, String value) {
 		return lib + "=" + value;
-	}
+	} /* End construct */
+	
+	/* Static method to init (or re-init) the map */
+	public static void init() {
+		ITEMS = new HashMap<String, Item>();
+	} /* End init */
 	
 	/* Static method to get the item from the static list thanks to the lib & value */
 	public static Item getItemByValue(String lib, String value) {
 		Item result = null;
-		
-		String constructor = construct(lib, value);
-		
+		String sKey = construct(lib, value);
+
 		if (ITEMS == null)
-			ITEMS = new HashMap<String, Item>();
-		
-		if (ITEMS.containsKey(constructor))
-			result = ITEMS.get(constructor);
-		
+			init();
+
+		if (ITEMS.containsKey(sKey)) {
+			result = ITEMS.get(sKey);
+		} else { // If the item doesn't exists, add it to the static map 
+			result = new Item(sKey);
+			ITEMS.put(sKey, result);
+		}
 		return result;
-	}
+	} /* End getItemByValue */
 }

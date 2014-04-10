@@ -24,7 +24,9 @@ public class TransactionParser {
 
 		Transaction result = new Transaction();
 		int counter = 0;
-
+		
+		System.out.println(sTransaction);
+		
 		// Check the number of fields between the current transaction and tokens
 		if (tokens.length != sTransaction.split(splitter).length)
 			throw new DataLengthNotConcordException("Exception : the transaction " + sTransaction
@@ -34,8 +36,10 @@ public class TransactionParser {
 		// Add each item to the transaction
 		for (String s : sTransaction.split(splitter)) {
 			if (!s.equals("0")) {
-				result.addItem(Item.getItemByValue(tokens[counter++], s));
+				result.addItem(Item.getItemByValue(tokens[counter], s));
 			}
+			
+			counter++;
 		}
 
 		return result;

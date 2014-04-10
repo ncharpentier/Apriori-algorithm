@@ -53,6 +53,10 @@ public class Miner {
 		/* Calc the frequent k-itemsets */
 		init1ItemSets();
 
+		
+		for (Item i : Item.ITEMS.values())
+			System.out.println("\t" + i);
+		
 		calcItemSets();
 
 		/* DEBUG DISPLAY */

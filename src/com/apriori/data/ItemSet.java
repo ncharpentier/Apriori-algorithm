@@ -56,4 +56,35 @@ public class ItemSet {
 	public void addItems(List<Item> items) {
 		this.items.addAll(items);
 	} /* End addItems */
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((items == null) ? 0 : items.hashCode());
+		result = prime * result + k;
+		result = prime * result + support;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ItemSet other = (ItemSet) obj;
+		if (items == null) {
+			if (other.items != null)
+				return false;
+		} else if (!items.equals(other.items))
+			return false;
+		if (k != other.k)
+			return false;
+		if (support != other.support)
+			return false;
+		return true;
+	}
 }

@@ -103,7 +103,7 @@ public class Miner {
 			/* Calc the support for each candidate */
 			for (ItemSet is : itemSetsCandidates) {
 				int s = calcSupport(is);
-				System.out.println("supp : " + s);
+
 				if(s > minSupp) {
 					is.setSupport(s);
 					itemSetsFound.add(is);
@@ -141,21 +141,21 @@ public class Miner {
 						
 						tmpIS.addItems(set);
 
-						candidates.add(tmpIS);
+						if (!candidates.contains(tmpIS))
+							candidates.add(tmpIS);
 					}
 				}
 			}
 		}
-
+		
 		return candidates;
 	}
 	
 	private List<Item> union(List<Item> items, List<Item> items2) {
 		List<Item> res = new ArrayList<Item>(items);
-		for (Item i : items2) {
-			if (!res.contains(i))
-				res.add(i);
-		}
+
+		res.removeAll(items2);
+		res.addAll(items2);
 		
 		return res;
 	}

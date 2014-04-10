@@ -46,4 +46,14 @@ public class ItemSet {
 	public void addItem(Item item) {
 		items.add(item);
 	} /* End addItem */
+	@Override
+	public String toString() {
+		return "ItemSet [k=" + k + ", support=" + support + ", items=" + items
+				+ "]";
+	}
+
+	/* Add items to the list */
+	public void addItems(List<Item> items) {
+		this.items.addAll(items);
+	} /* End addItems */
 }

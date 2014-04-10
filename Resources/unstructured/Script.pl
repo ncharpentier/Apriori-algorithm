@@ -21,7 +21,7 @@
 	$premier_mot = 1;
 	foreach (@out) {
 		if(not $premier_mot) {        # gestion de la virgule
-	    	print SORTIE_APRIORI " ";
+	    	print SORTIE_APRIORI "\t";
 	    }
 	    $premier_mot = 0;
 		print SORTIE_APRIORI $_;	
@@ -37,7 +37,7 @@
 		      $mot = " " . $mot . " ";  # on ajoute des espaces autour du mot afin de ne matcher que lui
 
 			  if(not $premier_mot) {        # gestion de la virgule
-		               print SORTIE_APRIORI " ";
+		               print SORTIE_APRIORI "\t";
 		      }
 		      $premier_mot = 0;
 		      if($ligne =~ m/$mot/) {

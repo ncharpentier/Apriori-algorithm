@@ -4,10 +4,11 @@ import com.apriori.utils.Miner;
 
 public class Launcher {
 
-	public static String FILE_TO_READ = "Resources/structured/tickets_de_caisse.txt";
+	public static String FILE_TO_READ = "Resources/unstructured/transa.txt";
+	public static int MIN_SUPPORT = 2;
 	
 	public static void main(String[] args) {
-		new Miner().processFile(FILE_TO_READ);
+		new Miner(MIN_SUPPORT).processFile(FILE_TO_READ);
 	}
 
 }

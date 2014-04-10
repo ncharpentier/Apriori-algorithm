@@ -8,27 +8,27 @@ public class Item {
 	
 	/* --- Attributes --- */
 	/* Static */
-	private static Map<String, Item> ITEMS;
+	public static Map<String, Item> ITEMS;
 
 	/* No-Static */
 	private String key;
+	private Integer supp;
 	/* --- /Attributes --- */
 	
 	
 	
 	/* --- Constructors --- */
 	/* Private constructor */
-	private Item(String key) { this.key = key; }
+	private Item(String key) { this.key = key; supp = 1; }
 	/* --- /Constructors --- */
 	
 	
 	
 	/* --- Getter --- */
 	public String getKey() { return key; }
+	public Integer getSupp() { return supp; }
 	/* --- /Getter --- */
-	
-	
-	
+		
 	/* Static method to uniform the built string from the lib & value */
 	private static String construct(String lib, String value) {
 		return lib + "=" + value;
@@ -43,12 +43,13 @@ public class Item {
 	public static Item getItemByValue(String lib, String value) {
 		Item result = null;
 		String sKey = construct(lib, value);
-
+		
 		if (ITEMS == null)
 			init();
 
 		if (ITEMS.containsKey(sKey)) {
 			result = ITEMS.get(sKey);
+			result.supp++;
 		} else { // If the item doesn't exists, add it to the static map 
 			result = new Item(sKey);
 			ITEMS.put(sKey, result);

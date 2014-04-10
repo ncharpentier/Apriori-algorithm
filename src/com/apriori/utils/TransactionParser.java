@@ -35,7 +35,7 @@ public class TransactionParser {
 		for (String s : sTransaction.split(splitter)) {
 			result.addItem(Item.getItemByValue(tokens[counter++], s));
 		}
-			
+		
 		return result;
 	} /* End parseLine */
 }

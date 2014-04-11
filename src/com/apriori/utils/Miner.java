@@ -5,13 +5,12 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import com.apriori.data.Item;
 import com.apriori.data.ItemSet;
+import com.apriori.data.Rule;
 import com.apriori.data.Transaction;
 
 public class Miner {
@@ -21,6 +20,7 @@ public class Miner {
 	private static String SPLITTER = "\t";
 
 	/* No-Static */
+	private List<Rule> rules;
 	private List<Transaction> transactions;
 	private Map<Integer, List<ItemSet>> itemSets;
 	private double minSupport; // support % ( between 1 and 100 )
@@ -54,8 +54,8 @@ public class Miner {
 		init1ItemSets();
 
 		
-		for (Item i : Item.ITEMS.values())
-			System.out.println("\t" + i);
+		/*for (Item i : Item.ITEMS.values())
+			System.out.println("\t" + i);*/
 		
 		calcItemSets();
 
@@ -128,11 +128,10 @@ public class Miner {
 		List<ItemSet> candidates = new ArrayList<ItemSet>();
 
 		System.out.println("size " + itemSets.get(kinf).size());
-		
 		for (int i = 0 ; i < (itemSets.get(kinf).size() - 1); i++) {
 			
 			for (int j = (i + 1) ; j < itemSets.get(kinf).size() ; j++) {
-				/* Add the itemset only if only the last items of the 2 itemsets differs */
+				/* Add the itemset only if only one item of the 2 itemsets differs */
 				List<Item> set = union(itemSets.get(kinf).get(i).getItems(), itemSets.get(kinf).get(j).getItems());
 				
 				if (set.size() == (kinf + 1)) {
@@ -147,7 +146,6 @@ public class Miner {
 				}
 			}
 		}
-		
 		return candidates;
 	}
 	
@@ -176,7 +174,6 @@ public class Miner {
 			}
 			result = inter;
 		}
-		
 		return result;
 	}
 

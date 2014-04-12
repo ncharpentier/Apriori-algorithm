@@ -79,8 +79,14 @@ public class ItemSet {
 		if (items == null) {
 			if (other.items != null)
 				return false;
-		} else if (!items.equals(other.items))
-			return false;
+		} else {
+			boolean itemsEgaux = true;
+			for (Item i : items) {
+				itemsEgaux &= other.getItems().contains(i);
+			}
+			if (!itemsEgaux)
+				return false;
+		}
 		if (k != other.k)
 			return false;
 		if (support != other.support)

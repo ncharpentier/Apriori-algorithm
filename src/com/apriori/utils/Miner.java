@@ -66,9 +66,11 @@ public class Miner {
 
 		for (Integer i : itemSets.keySet()) {
 			System.out.println(" ["+i+"] itemsets : " + itemSets.get(i).size());
-			for (ItemSet is : itemSets.get(i))
+		}
+		for (ItemSet is : itemSets.get(1)){
 				System.out.println("\t" + is);
 		}
+		
 		
 	} /* End processFile */
 
@@ -78,7 +80,7 @@ public class Miner {
 		ArrayList<ItemSet> itemSetsFound = new ArrayList<ItemSet>();
 
 		for (Item i : Item.ITEMS.values())
-			if((double)i.getSupp() > minSupp) {
+			if((double)i.getSupp() >= minSupp) {
 				ArrayList<Item> items = new ArrayList<Item>();
 				items.add(i);
 				itemSetsFound.add(new ItemSet(1, i.getSupp(), items));	
@@ -104,7 +106,7 @@ public class Miner {
 			for (ItemSet is : itemSetsCandidates) {
 				int s = calcSupport(is);
 
-				if(s > minSupp) {
+				if(s >= minSupp) {
 					is.setSupport(s);
 					itemSetsFound.add(is);
 				}
@@ -186,7 +188,6 @@ public class Miner {
 				result++;
 			}
 		}
-
 		return result;
 	}
 

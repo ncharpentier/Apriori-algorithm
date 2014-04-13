@@ -33,7 +33,7 @@ public class Rule {
 
 	@Override
 	public String toString() {
-		return "Rule [" + hypothesis + "==>" + consequence + ", confidence = " + confidence + "]";
+		return "Rule {" + hypothesis + "==>" + consequence + ", confidence = " + confidence + "}";
 	}
 
 	@Override

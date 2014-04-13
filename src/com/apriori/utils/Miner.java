@@ -25,16 +25,18 @@ public class Miner {
 	private Map<Integer, List<ItemSet>> itemSets;
 	private double minSupport; // support % ( between 1 and 100 )
 	private double minSupp; // support double
+	private double minConf; // min confidence for generated rules
 	/* --- /Attributes --- */
 
 
 
 	/* --- Constructors --- */
-	public Miner (double minSupport) {
+	public Miner (double minSupport, double minConf) {
 		transactions = new ArrayList<Transaction>();
 		itemSets = new HashMap<Integer, List<ItemSet>>();
 		rules = new ArrayList<Rule>();
 		this.minSupport = minSupport;
+		this.minConf = minConf;
 	}
 	/* --- /Constructors --- */
 
@@ -73,14 +75,38 @@ public class Miner {
 
 	/* Display all rules */
 	private void displayRules() {
-		
+		System.out.println(rules.size() + " rules found with a Min conf = " + minConf);
+		for (Rule r : rules)
+			System.out.println(r);
 	} /* End displayRules */
 
 	/* Generate the rules */
 	private void generateRules() {
-		
+		for (int i : itemSets.keySet()) {
+			if (i > 1) { // 1-itemsets ignored
+				for (ItemSet is : itemSets.get(i)){
+					for (Item item : is.getItems()) {
+						List<Item> hypothesis = new ArrayList<Item>(is.getItems());
+						hypothesis.remove(item);
+						
+						// Calc the confidence
+						double conf = calcConfidence(hypothesis, is.getSupport()); // confidence
+						
+						if (conf >= minConf)
+							rules.add(new Rule(hypothesis, item, conf));
+					}
+				}
+			}
+		}
 	} /* End generateRules */
 
+	/* Calc the confidence of items */
+	/* conf(A -> B) = Pr (AnB) / Pr (A) = Support(AnB) / Support (A) */
+	private double calcConfidence(List<Item> a, int suppAB) {
+		return  (double) suppAB / ((double) calcSupport(a)); 
+		// Recalc the supp(a) : Maybe to optimize because the supp(a) exists with the existing itemset with item list a
+	} /* End calcConfidence */
+	
 	/* Display all k-itemsets */
 	private void displayItemSets() {
 		for (Integer i : itemSets.keySet()) {
@@ -214,6 +240,18 @@ public class Miner {
 		return result;
 	} /* End calcSupport */
 
+	/* Calc the support of the given item list */
+	private Integer calcSupport(List<Item> is) {
+		Integer result = 0;
+
+		for (Transaction t : transactions) {
+			if (t.getItems().containsAll(is)) {
+				result++;
+			}
+		}
+		return result;
+	} /* End calcSupport */
+	
 	/* Call the TransactionParser for each line */
 	private void parseFile(String fileToRead) {
 		TransactionParser tParser = null;

@@ -160,7 +160,7 @@ public class Miner {
 	
 	/* Display all rules */
 	private void displayRules() {
-		System.out.println(rules.size() + " rules found with a Min conf = " + minConf);
+		System.out.println(rules.size() + " rules found with a Min conf = " + minConf + " and min support = " + minSupport + "%");
 		for (Rule r : rules)
 			System.out.println(r);
 	} /* End displayRules */
@@ -342,6 +342,7 @@ public class Miner {
 	private void parseFile(String fileToRead) {
 		TransactionParser tParser = null;
 		BufferedReader bufferReader = null;
+		Item.init();
 
 		try {
 			String currLine;
@@ -362,7 +363,8 @@ public class Miner {
 			}
 
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.out.println("File " + fileToRead + " not found.");
+			//e.printStackTrace();
 		} finally {
 			try {
 				if (bufferReader != null)

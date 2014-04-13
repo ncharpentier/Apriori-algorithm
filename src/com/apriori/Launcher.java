@@ -1,5 +1,7 @@
 package com.apriori;
 
+import java.io.File;
+
 import com.apriori.utils.Miner;
 
 public class Launcher {
@@ -23,8 +25,11 @@ public class Launcher {
 				case "-f":
 					try {
 						FILE_TO_READ = args[++i];
+						if (!new File(FILE_TO_READ).isFile()) {
+							throw new Exception(FILE_TO_READ);
+						}
 					} catch (Exception e) {
-						System.out.println("File not found.");
+						System.out.println("File " + e.getMessage() + " not found.");
 						return;
 					}
 					break;

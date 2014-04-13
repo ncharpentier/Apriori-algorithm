@@ -25,7 +25,8 @@ public class TransactionParser {
 		Transaction result = new Transaction();
 		int counter = 0;
 		
-		System.out.println(sTransaction);
+		/* DEBUG DISPLAY */
+		// System.out.println(sTransaction);
 		
 		// Check the number of fields between the current transaction and tokens
 		if (tokens.length != sTransaction.split(splitter).length)

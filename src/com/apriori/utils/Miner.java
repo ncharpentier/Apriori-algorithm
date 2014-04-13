@@ -33,6 +33,7 @@ public class Miner {
 	public Miner (double minSupport) {
 		transactions = new ArrayList<Transaction>();
 		itemSets = new HashMap<Integer, List<ItemSet>>();
+		rules = new ArrayList<Rule>();
 		this.minSupport = minSupport;
 	}
 	/* --- /Constructors --- */
@@ -52,30 +53,49 @@ public class Miner {
 
 		/* Calc the frequent k-itemsets */
 		init1ItemSets();
-
-		
-		/*for (Item i : Item.ITEMS.values())
-			System.out.println("\t" + i);*/
-		
 		calcItemSets();
 
 		/* DEBUG DISPLAY */
-//		for (Item s : Item.ITEMS.values()) {
-//			System.out.println(s.getKey() + " : supp (" + s.getSupp() + ")");
-//		}
+		//		for (Item i : Item.ITEMS.values())
+		//			System.out.println("\t" + i);
+		//		for (Item s : Item.ITEMS.values()) {
+		//			System.out.println(s.getKey() + " : supp (" + s.getSupp() + ")");
+		//		}
 
-		for (Integer i : itemSets.keySet()) {
-			System.out.println(" ["+i+"] itemsets : " + itemSets.get(i).size());
-		}
-		for (ItemSet is : itemSets.get(1)){
-				System.out.println("\t" + is);
-		}
-		
+		/* Display itemSets */
+		displayItemSets();
+		/* Generate the rules */
+		generateRules();
+		/* Display rules */
+		displayRules();
 		
 	} /* End processFile */
 
+	/* Display all rules */
+	private void displayRules() {
+		
+	} /* End displayRules */
+
+	/* Generate the rules */
+	private void generateRules() {
+		
+	} /* End generateRules */
+
+	/* Display all k-itemsets */
+	private void displayItemSets() {
+		for (Integer i : itemSets.keySet()) {
+			System.out.println(" Frequent "+i+"-itemsets : " + itemSets.get(i).size());
+
+			int count = 1;
+			for (ItemSet is : itemSets.get(i)){
+				System.out.println("[" + (count++) + "]\t" + is);
+			}
+			System.out.println("--");
+		}
+	} /* End displayItemSets */
+	
 	/* initialize the frequent 1-itemsets */
-	public void init1ItemSets() {
+	private void init1ItemSets() {
 		// Create the first list
 		ArrayList<ItemSet> itemSetsFound = new ArrayList<ItemSet>();
 
@@ -87,21 +107,26 @@ public class Miner {
 			}
 
 		itemSets.put(1, itemSetsFound);
-		System.out.println("size 1item: " + itemSetsFound.size());
-	}
+
+		/* DEBUG DISPLAY */
+		//		System.out.println("size 1item: " + itemSetsFound.size());
+
+	} /* End init1ItemSets */
 
 	/* Calc the frequent k-itemsets */
-	public void calcItemSets() {
+	private void calcItemSets() {
 		List<ItemSet> itemSetsFound;
 
 		int k = 2;
 
 		do {
-			System.out.println(k);
 			itemSetsFound = new ArrayList<ItemSet>();
 			/* Calc the candidates to be frequent k itemset, with pruning */
 			List<ItemSet> itemSetsCandidates = calcCandidates(k-1);
-			System.out.println("k : " + k + " candidSize " + itemSetsCandidates.size());
+
+			/* DEBUG DISPLAY */
+			//			System.out.println("k : " + k + " candidSize " + itemSetsCandidates.size());
+
 			/* Calc the support for each candidate */
 			for (ItemSet is : itemSetsCandidates) {
 				int s = calcSupport(is);
@@ -115,31 +140,30 @@ public class Miner {
 			if (!itemSetsFound.isEmpty()) {
 				itemSets.put(k, itemSetsFound);
 			}
-			System.out.println("k : " + k + " candidSize retenu " + itemSetsFound.size());
+
+			/* DEBUG DISPLAY */
+			//			System.out.println("k : " + k + " candidSize retenu " + itemSetsFound.size());
+
 			k++;
-			
+
 		} while (!itemSetsFound.isEmpty());
-		
-		
-	}
-	
+	} /* End calcItemSets */
+
 
 	/* Make the candidates itemsets */
-	public List<ItemSet> calcCandidates(int kinf) {
-		System.out.println("Kinf" + kinf);
+	private List<ItemSet> calcCandidates(int kinf) {
 		List<ItemSet> candidates = new ArrayList<ItemSet>();
 
-		System.out.println("size " + itemSets.get(kinf).size());
 		for (int i = 0 ; i < (itemSets.get(kinf).size() - 1); i++) {
-			
+
 			for (int j = (i + 1) ; j < itemSets.get(kinf).size() ; j++) {
 				/* Add the itemset only if only one item of the 2 itemsets differs */
 				List<Item> set = union(itemSets.get(kinf).get(i).getItems(), itemSets.get(kinf).get(j).getItems());
-				
+
 				if (set.size() == (kinf + 1)) {
-					if (pruneAuthorized(set)) {
+					if (pruneAuthorized(set)) { // Check if pruning is ok
 						ItemSet tmpIS = new ItemSet(kinf + 1);
-						
+
 						tmpIS.addItems(set);
 
 						if (!candidates.contains(tmpIS))
@@ -149,23 +173,22 @@ public class Miner {
 			}
 		}
 		return candidates;
-	}
-	
+	} /* End calcCandidates */
+
+	/* Make the union of two item list */
 	private List<Item> union(List<Item> items, List<Item> items2) {
 		List<Item> res = new ArrayList<Item>(items);
 
 		res.removeAll(items2);
 		res.addAll(items2);
-		
+
 		return res;
-	}
-
-
+	} /* End union */
 
 	/* Check all possible k itemset derived from the k+1 itemset are frequent */
 	private boolean pruneAuthorized(List<Item> set) {
 		boolean result = true;
-		
+
 		for (int i = 0; i < set.size() && result; i++) {
 			List<Item> tmpList = new ArrayList<Item>(set);
 			/* List - 1 */
@@ -177,10 +200,10 @@ public class Miner {
 			result = inter;
 		}
 		return result;
-	}
+	} /* End pruneAuthorized */
 
 	/* Calc the support of the given itemset */
-	public Integer calcSupport(ItemSet is) {
+	private Integer calcSupport(ItemSet is) {
 		Integer result = 0;
 
 		for (Transaction t : transactions) {
@@ -189,10 +212,10 @@ public class Miner {
 			}
 		}
 		return result;
-	}
+	} /* End calcSupport */
 
 	/* Call the TransactionParser for each line */
-	public void parseFile(String fileToRead) {
+	private void parseFile(String fileToRead) {
 		TransactionParser tParser = null;
 		BufferedReader bufferReader = null;
 

@@ -57,6 +57,17 @@ public class ItemSet {
 		this.items.addAll(items);
 	} /* End addItems */
 
+	/* Return if the items of the itemset is included into the other */
+	public boolean isIncludedInto(ItemSet other) {
+		return other.contains(this);
+	} /* End isIncludedInto */
+	
+	/* Return if the itemset contains the items of the other */
+	public boolean contains(ItemSet other) {
+		return items.containsAll(other.getItems());
+	} /* End contains */
+	
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;

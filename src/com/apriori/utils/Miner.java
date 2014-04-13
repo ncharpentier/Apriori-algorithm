@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.apriori.Launcher.Method;
 import com.apriori.data.Item;
 import com.apriori.data.ItemSet;
 import com.apriori.data.Rule;
@@ -23,24 +24,24 @@ public class Miner {
 	private List<Rule> rules;
 	private List<Transaction> transactions;
 	private Map<Integer, List<ItemSet>> itemSets;
+	private Map<Integer, List<ItemSet>> closedItemSets;
+	private Map<Integer, List<ItemSet>> maximalItemSets;
 	private double minSupport; // support % ( between 1 and 100 )
 	private double minSupp; // support double
 	private double minConf; // min confidence for generated rules
 	/* --- /Attributes --- */
 
-
-
 	/* --- Constructors --- */
 	public Miner (double minSupport, double minConf) {
 		transactions = new ArrayList<Transaction>();
 		itemSets = new HashMap<Integer, List<ItemSet>>();
+		closedItemSets = new HashMap<Integer, List<ItemSet>>();
+		maximalItemSets = new HashMap<Integer, List<ItemSet>>();
 		rules = new ArrayList<Rule>();
 		this.minSupport = minSupport;
 		this.minConf = minConf;
 	}
 	/* --- /Constructors --- */
-
-
 
 	/* Process method */
 	public void processFile(String fileToRead) {
@@ -64,15 +65,99 @@ public class Miner {
 		//			System.out.println(s.getKey() + " : supp (" + s.getSupp() + ")");
 		//		}
 
+	} /* End processFile */
+	
+	/* Generate itemSets and rules relate to the method wanted */
+	public void genAndDisplayRules(Method method) {
+		Map<Integer, List<ItemSet>> itemSetsToGenerate;
+		
+		if (method == Method.CLOSED) {
+			/* Calc the frequent closed k-itemsets */
+			calcClosedItemSets();
+			itemSetsToGenerate = closedItemSets;
+		} else if (method == Method.MAXIMAL) {
+			/* Calc the frequent maximal k-itemsets */
+			calcMaximalItemSets();
+			itemSetsToGenerate = maximalItemSets;
+		} else {
+			itemSetsToGenerate = itemSets;
+		}
+		
 		/* Display itemSets */
-		displayItemSets();
+		displayItemSets(itemSetsToGenerate);
+		
 		/* Generate the rules */
-		generateRules();
+		generateRules(itemSetsToGenerate);
+		
 		/* Display rules */
 		displayRules();
 		
-	} /* End processFile */
+	} /* End genAndDisplayRules */
 
+	/* Calc closed itemsets */
+	private void calcClosedItemSets() {
+		for (Integer i : itemSets.keySet()) {
+			if (itemSets.containsKey(i+1)) { // If the key exists
+				List<ItemSet> itemSetsToPut = new ArrayList<ItemSet>();
+				
+				for (ItemSet is : itemSets.get(i)) { // For each i-itemset
+					boolean isToPut = true;
+					
+					for (ItemSet itemset : itemSets.get(i+1)) { // Compare to i+1-itemset
+						// Check if support is equal and items included
+						if (is.isIncludedInto(itemset) && (is.getSupport()==itemset.getSupport())) {
+							isToPut = false;
+						}
+					}
+					
+					if (isToPut) {
+						itemSetsToPut.add(is);
+					}
+				} // end for each
+				
+				// Add the list if it isnt empty
+				if (!itemSetsToPut.isEmpty()) {
+					closedItemSets.put(i, itemSetsToPut);
+				}
+				
+			} else { // Else we can add itemsets
+				closedItemSets.put(i, itemSets.get(i));
+			}
+		}
+	} /* End calcClosedItemSets */
+
+	/* Calc maximal itemsets */
+	private void calcMaximalItemSets() {
+		for (Integer i : itemSets.keySet()) {
+			if (itemSets.containsKey(i+1)) { // If the key exists
+				List<ItemSet> itemSetsToPut = new ArrayList<ItemSet>();
+				
+				for (ItemSet is : itemSets.get(i)) { // For each i-itemset
+					boolean isToPut = true;
+					
+					for (ItemSet itemset : itemSets.get(i+1)) { // Compare to i+1-itemset
+						// Check if items included
+						if (is.isIncludedInto(itemset)) {
+							isToPut = false;
+						}
+					}
+					
+					if (isToPut) {
+						itemSetsToPut.add(is);
+					}
+				} // end for each
+				
+				// Add the list if it isnt empty
+				if (!itemSetsToPut.isEmpty()) {
+					maximalItemSets.put(i, itemSetsToPut);
+				}
+				
+			} else { // Else we can add itemsets
+				maximalItemSets.put(i, itemSets.get(i));
+			}
+		}
+	} /* End calcClosedItemSets */
+	
 	/* Display all rules */
 	private void displayRules() {
 		System.out.println(rules.size() + " rules found with a Min conf = " + minConf);
@@ -81,17 +166,19 @@ public class Miner {
 	} /* End displayRules */
 
 	/* Generate the rules */
-	private void generateRules() {
-		for (int i : itemSets.keySet()) {
+	private void generateRules(Map<Integer, List<ItemSet>> itemSetsToGenRules) {
+		rules = new ArrayList<Rule>();
+		
+		for (int i : itemSetsToGenRules.keySet()) {
 			if (i > 1) { // 1-itemsets ignored
-				for (ItemSet is : itemSets.get(i)){
+				for (ItemSet is : itemSetsToGenRules.get(i)){
 					for (Item item : is.getItems()) {
 						List<Item> hypothesis = new ArrayList<Item>(is.getItems());
 						hypothesis.remove(item);
-						
+
 						// Calc the confidence
 						double conf = calcConfidence(hypothesis, is.getSupport()); // confidence
-						
+
 						if (conf >= minConf)
 							rules.add(new Rule(hypothesis, item, conf));
 					}
@@ -106,20 +193,20 @@ public class Miner {
 		return  (double) suppAB / ((double) calcSupport(a)); 
 		// Recalc the supp(a) : Maybe to optimize because the supp(a) exists with the existing itemset with item list a
 	} /* End calcConfidence */
-	
+
 	/* Display all k-itemsets */
-	private void displayItemSets() {
-		for (Integer i : itemSets.keySet()) {
-			System.out.println(" Frequent "+i+"-itemsets : " + itemSets.get(i).size());
+	private void displayItemSets(Map<Integer, List<ItemSet>> itemSetsToDisplay) {
+		for (Integer i : itemSetsToDisplay.keySet()) {
+			System.out.println(" Frequent "+i+"-itemsets : " + itemSetsToDisplay.get(i).size());
 
 			int count = 1;
-			for (ItemSet is : itemSets.get(i)){
+			for (ItemSet is : itemSetsToDisplay.get(i)){
 				System.out.println("[" + (count++) + "]\t" + is);
 			}
 			System.out.println("--");
 		}
 	} /* End displayItemSets */
-	
+
 	/* initialize the frequent 1-itemsets */
 	private void init1ItemSets() {
 		// Create the first list
@@ -174,7 +261,6 @@ public class Miner {
 
 		} while (!itemSetsFound.isEmpty());
 	} /* End calcItemSets */
-
 
 	/* Make the candidates itemsets */
 	private List<ItemSet> calcCandidates(int kinf) {
@@ -251,7 +337,7 @@ public class Miner {
 		}
 		return result;
 	} /* End calcSupport */
-	
+
 	/* Call the TransactionParser for each line */
 	private void parseFile(String fileToRead) {
 		TransactionParser tParser = null;
